@@ -2,6 +2,7 @@ import './Overflowbox.css';
 
 import { clsx } from 'clsx';
 import React, {
+  CSSProperties,
   ElementType,
   ReactNode,
   useCallback,
@@ -27,6 +28,7 @@ export interface OverflowboxProps {
   height?: number;
   onStart?: (...args: any[]) => any;
   onEnd?: (...args: any[]) => any;
+  style?: CSSProperties;
 }
 
 export const Overflowbox = (props: OverflowboxProps) => {
@@ -189,7 +191,7 @@ export const Overflowbox = (props: OverflowboxProps) => {
       onMouseUp={handleMouseUp}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      style={{ width: props.width, height: props.height }}
+      style={{ width: props.width, height: props.height, ...props.style }}
     >
       {props.children}
     </Wrapper>
