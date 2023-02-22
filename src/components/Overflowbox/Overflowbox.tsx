@@ -1,6 +1,5 @@
 import './Overflowbox.css';
 
-import { clsx } from 'clsx';
 import React, {
   CSSProperties,
   ElementType,
@@ -33,7 +32,7 @@ export interface OverflowboxProps {
 
 export const Overflowbox = (props: OverflowboxProps) => {
   const Wrapper = props.wrapper || 'div';
-  const { x = 0, y = 0 } = props;
+  const { x = 0, y = 0, className = '' } = props;
   const containerRef = useRef<null | HTMLElement>(null);
   const [mouseDown, setMouseDown] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -178,14 +177,11 @@ export const Overflowbox = (props: OverflowboxProps) => {
 
   return (
     <Wrapper
-      className={clsx(
-        'wrapper',
-        !props.showScrollbar && 'hide-scroll',
-        mouseDown && 'is-dragging',
-        props.className,
-        props.disable && 'disabled',
-        props.disableX && props.disableY && 'disabled',
-      )}
+      className={`'wrapper' ${!props.showScrollbar && 'hide-scroll'} ${
+        mouseDown && 'is-dragging'
+      } ${props.disable && 'disabled'} ${
+        props.disableX && props.disableY && 'disabled'
+      } ${className}`}
       ref={containerRef}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
