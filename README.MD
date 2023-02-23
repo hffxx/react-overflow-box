@@ -39,7 +39,7 @@ const Component = () => {
 | x             | number           | Initial X axis scroll position       | 0       |
 | y             | number           | Initial Y axis scroll position       | 0       |
 | wrapper       | ElementType      | Overflowbox wrapper                  | "div"   |
-| reactRef      | MutableRefObject | ref                                  | "div"   |
+| reactRef      | MutableRefObject | ref                                  |         |
 | children      | ReactNode        | Children                             |         |
 | showScrollbar | Boolean          | Show the scrollbars                  | false   |
 | className     | String           | The custom classname for Overflowbox |         |
