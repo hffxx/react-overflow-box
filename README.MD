@@ -32,23 +32,25 @@ const Component = () => {
 
 ## Component properties
 
-| Prop          | Type             | Description                          | Default |
-| ------------- | ---------------- | ------------------------------------ | ------- |
-| width         | number           | Overflowbox width                    |         |
-| height        | number           | Overflowbox height                   |         |
-| x             | number           | Initial X axis scroll position       | 0       |
-| y             | number           | Initial Y axis scroll position       | 0       |
-| wrapper       | ElementType      | Overflowbox wrapper                  | "div"   |
-| reactRef      | MutableRefObject | ref                                  |         |
-| children      | ReactNode        | Children                             |         |
-| showScrollbar | Boolean          | Show the scrollbars                  | false   |
-| className     | String           | The custom classname for Overflowbox |         |
-| disableX      | Boolean          | Disable X axis scroll                | false   |
-| disableY      | Boolean          | Disable Y axis scroll                | false   |
-| disable       | Boolean          | Disable X and Y axis scroll          | false   |
-| onStart       | Function         | Invoked when user start scrolling    |         |
-| onEnd         | Function         | Invoked when user ends scrolling     |         |
-| style         | CSSProperties    | Inline styles for the Overflowbox    |         |
+| Prop          | Type             | Description                               | Default |
+| ------------- | ---------------- | ----------------------------------------- | ------- |
+| width         | number           | view width                                |         |
+| height        | number           | view height                               |         |
+| x             | number           | Initial X axis position                   | 0       |
+| y             | number           | Initial Y axis position                   | 0       |
+| wrapper       | ElementType      | wrapper                                   | "div"   |
+| reactRef      | MutableRefObject | ref                                       |         |
+| children      | ReactNode        | Children                                  |         |
+| showScrollbar | Boolean          | Show the scrollbars                       | false   |
+| className     | String           | The custom classname for wrapper          |         |
+| disableX      | Boolean          | Disable X axis drag                       | false   |
+| disableY      | Boolean          | Disable Y axis drag                       | false   |
+| disable       | Boolean          | Disable X and Y axis drag                 | false   |
+| onDragStart   | Function         | Invoked when user start dragging          |         |
+| onDragEnd     | Function         | Invoked when user ends dragging           |         |
+| onMoveStart   | Function         | Invoked when view position is changed     |         |
+| onMoveEnd     | Function         | Invoked when view stops changing position |         |
+| style         | CSSProperties    | Inline styles for the Overflowbox         |         |
 
 ## License
 
