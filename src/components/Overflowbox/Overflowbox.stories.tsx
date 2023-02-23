@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, { useRef, useState } from 'react';
 
 import image from './mountains.jpeg';
@@ -12,12 +13,14 @@ export const Default = () => {
   const [x, setX] = useState(0);
   return (
     <Overflowbox
-      width={500}
+      width={300}
       height={300}
-      x={x}
+      x={400}
       style={{ border: '1px solid red' }}
-      onStart={() => console.log('on start')}
-      onEnd={() => console.log('on end')}
+      onMoveStart={() => console.log('on move Start')}
+      onMoveEnd={() => console.log('on move End')}
+      onDragStart={() => console.log('on drag start')}
+      onDragEnd={() => console.log('on drag end')}
     >
       <img src={image} alt="" />
     </Overflowbox>
