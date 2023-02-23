@@ -3,18 +3,14 @@ import './Overflowbox.css';
 import { clsx } from 'clsx';
 import React, {
   CSSProperties,
-  Dispatch,
   ElementType,
   MutableRefObject,
   ReactNode,
-  SetStateAction,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from 'react';
-
-import useDebounce from '../../hooks/useDebounce';
 
 export interface OverflowboxProps {
   children?: ReactNode;
@@ -49,10 +45,8 @@ export const Overflowbox = (props: OverflowboxProps) => {
 
   const containerRef = props.reactRef || innerRef;
 
-  const debouncedMouseDown = useDebounce<boolean>(mouseDown, 250);
-
   useEffect(() => {
-    if (isDragging) {
+    if (isDragging && !props.disable) {
       props.onStart?.();
     }
   }, [isDragging, props]);
@@ -118,6 +112,9 @@ export const Overflowbox = (props: OverflowboxProps) => {
   // }, [props.disableScrollWheel]);
 
   const handleMouseLeave = useCallback(() => {
+    if (props.disable) {
+      return;
+    }
     setMouseDown(false);
     if (mouseDown) {
       setIsDragging(false);
@@ -126,6 +123,9 @@ export const Overflowbox = (props: OverflowboxProps) => {
   }, [mouseDown, props]);
 
   const handleMouseUp = useCallback(() => {
+    if (props.disable) {
+      return;
+    }
     if (mouseDown) {
       setMouseDown(false);
     }
@@ -138,7 +138,7 @@ export const Overflowbox = (props: OverflowboxProps) => {
   const handleMouseDown = useCallback(
     (event: MouseEvent) => {
       event.preventDefault();
-      if (!containerRef.current) {
+      if (!containerRef.current || props.disable) {
         return;
       }
       const { offsetLeft, offsetTop, scrollLeft, scrollTop } =
@@ -151,7 +151,7 @@ export const Overflowbox = (props: OverflowboxProps) => {
       setScrollTop(scrollTop);
       setMouseDown(true);
     },
-    [containerRef],
+    [containerRef, props],
   );
 
   const handleMouseMove = useCallback(
@@ -172,17 +172,7 @@ export const Overflowbox = (props: OverflowboxProps) => {
         containerRef.current.scrollTop = scrollTop - scrollY;
       }
     },
-    [
-      mouseDown,
-      startX,
-      startY,
-      scrollLeft,
-      scrollTop,
-      containerRef,
-      props.disable,
-      props.disableX,
-      props.disableY,
-    ],
+    [mouseDown, startX, startY, scrollLeft, scrollTop, containerRef, props],
   );
 
   return (
