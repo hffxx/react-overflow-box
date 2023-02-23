@@ -13,7 +13,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "emitDeclarationOnly": true
+    "emitDeclarationOnly": true,
+    "typeRoots": ["node_modules/@types", "src/types"]
   },
   "include": ["./src", "./types"]
 }
