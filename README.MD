@@ -32,25 +32,25 @@ const Component = () => {
 
 ## Component properties
 
-| Prop          | Type             | Description                               | Default |
-| ------------- | ---------------- | ----------------------------------------- | ------- |
-| width         | number           | view width                                |         |
-| height        | number           | view height                               |         |
-| x             | number           | Initial X axis position                   | 0       |
-| y             | number           | Initial Y axis position                   | 0       |
-| wrapper       | ElementType      | wrapper                                   | "div"   |
-| reactRef      | MutableRefObject | ref                                       |         |
-| children      | ReactNode        | Children                                  |         |
-| showScrollbar | Boolean          | Show the scrollbars                       | false   |
-| className     | String           | The custom classname for wrapper          |         |
-| disableX      | Boolean          | Disable X axis drag                       | false   |
-| disableY      | Boolean          | Disable Y axis drag                       | false   |
-| disable       | Boolean          | Disable X and Y axis drag                 | false   |
-| onDragStart   | Function         | Invoked when user start dragging          |         |
-| onDragEnd     | Function         | Invoked when user ends dragging           |         |
-| onMoveStart   | Function         | Invoked when view position is changed     |         |
-| onMoveEnd     | Function         | Invoked when view stops changing position |         |
-| style         | CSSProperties    | Inline styles for the Overflowbox         |         |
+| Prop          | Type             | Description                                    | Default |
+| ------------- | ---------------- | ---------------------------------------------- | ------- |
+| width         | number           | View width                                     |         |
+| height        | number           | View height                                    |         |
+| x             | number           | Initial X-axis view position                   | 0       |
+| y             | number           | Initial Y-axis view position                   | 0       |
+| wrapper       | ElementType      | Wrapper element                                | "div"   |
+| reactRef      | MutableRefObject | Ref                                            |         |
+| children      | ReactNode        | Children                                       |         |
+| showScrollbar | Boolean          | Show the scrollbars                            | false   |
+| className     | String           | Custom classname for the wrapper               |         |
+| disableX      | Boolean          | Disable X-axis view drag                       | false   |
+| disableY      | Boolean          | Disable Y-axis view drag                       | false   |
+| disable       | Boolean          | Disable X-axis and Y-axis view drag            | false   |
+| onDragStart   | Function         | Invoked when the user starts dragging          |         |
+| onDragEnd     | Function         | Invoked when the user ends dragging            |         |
+| onMoveStart   | Function         | Invoked when the view position starts changing |         |
+| onMoveEnd     | Function         | Invoked when the view position stops changing  |         |
+| style         | CSSProperties    | Inline styles for the wrapper                  |         |
 
 ## License
 

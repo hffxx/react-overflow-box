@@ -17,8 +17,8 @@ export const Default = () => {
       height={300}
       x={400}
       style={{ border: '1px solid red' }}
-      // onMoveStart={() => console.log('on move Start')}
-      // onMoveEnd={() => console.log('on move End')}
+      onMoveStart={() => console.log('on move Start')}
+      onMoveEnd={() => console.log('on move End')}
       onDragStart={() => console.log('on drag start')}
       onDragEnd={() => console.log('on drag end')}
     >
