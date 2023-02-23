@@ -3,8 +3,11 @@ import './Overflowbox.css';
 import { clsx } from 'clsx';
 import React, {
   CSSProperties,
+  Dispatch,
   ElementType,
+  MutableRefObject,
   ReactNode,
+  SetStateAction,
   useCallback,
   useEffect,
   useRef,
@@ -21,7 +24,6 @@ export interface OverflowboxProps {
   disableX?: boolean;
   disableY?: boolean;
   disable?: boolean;
-  disableScrollWheel?: boolean;
   x?: number;
   y?: number;
   width?: number;
@@ -29,51 +31,38 @@ export interface OverflowboxProps {
   onStart?: (...args: any[]) => any;
   onEnd?: (...args: any[]) => any;
   style?: CSSProperties;
+  reactRef?: MutableRefObject<HTMLElement | null>;
+  // disableScrollWheel?: boolean;
 }
 
 export const Overflowbox = (props: OverflowboxProps) => {
   const Wrapper = props.wrapper || 'div';
   const { x = 0, y = 0 } = props;
-  const containerRef = useRef<null | HTMLElement>(null);
+  const innerRef = useRef<null | HTMLElement>(null);
   const [mouseDown, setMouseDown] = useState(false);
   const [startX, setStartX] = useState(0);
   const [startY, setStartY] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
   const [scrollTop, setScrollTop] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const containerRef = props.reactRef || innerRef;
 
   const debouncedMouseDown = useDebounce<boolean>(mouseDown, 250);
 
-  const scrollTo = useCallback(() => {
-    if (!containerRef.current) {
-      return;
-    }
-    const { width, height } = containerRef.current.getBoundingClientRect();
-    const containerWidth = Math.floor(width);
-    const containerHeight = Math.floor(height);
-    const initialX = x - containerWidth / 2;
-    const initialY = y - containerHeight / 2;
-    containerRef.current.scrollLeft = initialX;
-    containerRef.current.scrollTop = initialY;
-  }, [x, y]);
-
   useEffect(() => {
-    if (mounted) {
-      scrollTo();
-    }
-  }, [x, y, mounted, scrollTo]);
-
-  useEffect(() => {
-    if (debouncedMouseDown) {
+    if (isDragging) {
       props.onStart?.();
     }
-  }, [debouncedMouseDown, props]);
+  }, [isDragging, props]);
 
   useEffect(() => {
     if (!containerRef.current || mounted) {
       return;
     }
     const images = Array.from(containerRef.current.querySelectorAll('img'));
+
     if (images.length) {
       Promise.all(
         images.map(
@@ -92,38 +81,59 @@ export const Overflowbox = (props: OverflowboxProps) => {
     } else {
       setMounted(true);
     }
-  }, [mounted]);
+  }, [mounted, containerRef]);
+
+  const scrollTo = useCallback(() => {
+    if (!containerRef.current) {
+      return;
+    }
+    const { width, height } = containerRef.current.getBoundingClientRect();
+    const containerWidth = Math.floor(width);
+    const containerHeight = Math.floor(height);
+    const initialX = x - containerWidth / 2;
+    const initialY = y - containerHeight / 2;
+    containerRef.current.scrollLeft = initialX;
+    containerRef.current.scrollTop = initialY;
+  }, [x, y, containerRef]);
 
   useEffect(() => {
-    const handleWheel = (e: WheelEvent) => {
-      e.preventDefault();
-    };
-
-    if (props.disableScrollWheel) {
-      document.addEventListener('wheel', handleWheel, { passive: false });
-    } else {
-      document.removeEventListener('wheel', handleWheel);
+    if (mounted) {
+      scrollTo();
     }
-    return () => {
-      document.removeEventListener('wheel', handleWheel);
-    };
-  }, [props.disableScrollWheel]);
+  }, [x, y, mounted, scrollTo]);
+
+  // useEffect(() => {
+  //   const handleWheel = (e: WheelEvent) => {
+  //     e.preventDefault();
+  //   };
+
+  //   if (props.disableScrollWheel) {
+  //     document.addEventListener('wheel', handleWheel, { passive: false });
+  //   } else {
+  //     document.removeEventListener('wheel', handleWheel);
+  //   }
+  //   return () => {
+  //     document.removeEventListener('wheel', handleWheel);
+  //   };
+  // }, [props.disableScrollWheel]);
 
   const handleMouseLeave = useCallback(() => {
     setMouseDown(false);
-    if (debouncedMouseDown) {
+    if (mouseDown) {
+      setIsDragging(false);
       props.onEnd?.();
     }
-  }, [props, debouncedMouseDown]);
+  }, [mouseDown, props]);
 
   const handleMouseUp = useCallback(() => {
     if (mouseDown) {
       setMouseDown(false);
     }
-    if (debouncedMouseDown) {
+    if (mouseDown && isDragging) {
       props.onEnd?.();
     }
-  }, [mouseDown, props, debouncedMouseDown]);
+    setIsDragging(false);
+  }, [mouseDown, props, isDragging]);
 
   const handleMouseDown = useCallback(
     (event: MouseEvent) => {
@@ -135,7 +145,6 @@ export const Overflowbox = (props: OverflowboxProps) => {
         containerRef.current;
       const x = event.pageX - offsetLeft;
       const y = event.pageY - offsetTop;
-
       setStartX(x);
       setStartY(y);
       setScrollLeft(scrollLeft);
@@ -151,11 +160,11 @@ export const Overflowbox = (props: OverflowboxProps) => {
       if (!mouseDown || !containerRef.current || props.disable) {
         return;
       }
-
       const x = event.pageX - containerRef.current.offsetLeft;
       const y = event.pageY - containerRef.current.offsetTop;
       const scrollX = x - startX;
       const scrollY = y - startY;
+      setIsDragging(true);
       if (!props.disableX) {
         containerRef.current.scrollLeft = scrollLeft - scrollX;
       }
