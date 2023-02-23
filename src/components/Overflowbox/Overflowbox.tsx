@@ -115,24 +115,28 @@ export const Overflowbox = (props: OverflowboxProps) => {
     if (props.disable) {
       return;
     }
-    setMouseDown(false);
     if (mouseDown) {
       setIsDragging(false);
-      props.onEnd?.();
+      setMouseDown(false);
+      if (isDragging) {
+        props.onEnd?.();
+      }
     }
-  }, [mouseDown, props]);
+  }, [props, isDragging, mouseDown]);
+
+  //^git
 
   const handleMouseUp = useCallback(() => {
     if (props.disable) {
       return;
     }
     if (mouseDown) {
+      setIsDragging(false);
       setMouseDown(false);
+      if (isDragging) {
+        props.onEnd?.();
+      }
     }
-    if (mouseDown && isDragging) {
-      props.onEnd?.();
-    }
-    setIsDragging(false);
   }, [mouseDown, props, isDragging]);
 
   const handleMouseDown = useCallback(
