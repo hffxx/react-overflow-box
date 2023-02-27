@@ -32,7 +32,7 @@ export interface OverflowboxProps {
   reactRef?: MutableRefObject<HTMLElement | null>;
   cursor?: CSSProperties['cursor'];
   grabCursor?: CSSProperties['cursor'];
-  // disableScrollWheel?: boolean;
+  disableScrollWheel?: boolean;
 }
 
 export const Overflowbox = (props: OverflowboxProps) => {
@@ -47,6 +47,7 @@ export const Overflowbox = (props: OverflowboxProps) => {
   const [mounted, setMounted] = useState(false);
   const [isDrag, setIsDrag] = useState(false);
   const [isMove, setIsMove] = useState(false);
+  const [isMouseInside, setIsMouseInside] = useState(false);
 
   const containerRef = props.reactRef || innerRef;
 
@@ -76,6 +77,21 @@ export const Overflowbox = (props: OverflowboxProps) => {
     }
   }, [mounted, containerRef]);
 
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+    };
+
+    if (props.disableScrollWheel && isMouseInside) {
+      document.addEventListener('wheel', handleWheel, { passive: false });
+    } else {
+      document.removeEventListener('wheel', handleWheel);
+    }
+    return () => {
+      document.removeEventListener('wheel', handleWheel);
+    };
+  }, [props.disableScrollWheel, isMouseInside]);
+
   const scrollTo = useCallback(() => {
     if (!containerRef.current) {
       return;
@@ -96,6 +112,7 @@ export const Overflowbox = (props: OverflowboxProps) => {
   }, [x, y, mounted, scrollTo]);
 
   const handleMouseLeave = useCallback(() => {
+    setIsMouseInside(false);
     if (props.disable) {
       return;
     }
@@ -192,6 +209,7 @@ export const Overflowbox = (props: OverflowboxProps) => {
       onMouseUp={handleMouseUp}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onMouseEnter={() => setIsMouseInside(true)}
       onScroll={() => {
         if (!mouseDown) {
           return;
