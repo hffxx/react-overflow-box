@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import React, { useState } from 'react';
 
-import image from './mountains.jpeg';
+import elo from './elo.png';
 import { Overflowbox } from './Overflowbox';
 
 export default {
@@ -11,18 +11,21 @@ export default {
 
 export const Default = () => {
   const [x, setX] = useState(0);
+
   return (
     <Overflowbox
       width={300}
       height={300}
-      x={400}
       style={{ border: '1px solid red' }}
       onMoveStart={() => console.log('on move Start')}
       onMoveEnd={() => console.log('on move End')}
       onDragStart={() => console.log('on drag start')}
       onDragEnd={() => console.log('on drag end')}
+      showScrollbar
+      x={1920 / 2}
+      y={1080 / 2}
     >
-      <img src={image} alt="" />
+      <img src={elo} alt="" />
     </Overflowbox>
   );
 };
