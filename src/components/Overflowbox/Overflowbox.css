@@ -3,18 +3,8 @@
   cursor: grab;
 }
 
-.wrapper > * {
-  transition: 0.3s;
-  transform: scale(1);
-  transform-origin: 0 0;
-}
-
 .wrapper img {
   display: block;
-}
-
-.hide-scroll::-webkit-scrollbar {
-  display: none;
 }
 
 .hide-scroll {
@@ -22,10 +12,14 @@
   scrollbar-width: none;
 }
 
+.hide-scroll::-webkit-scrollbar {
+  display: none;
+}
+
 .is-dragging {
   cursor: grabbing;
 }
 
 .disabled {
-  cursor: auto;
+  cursor: inherit;
 }

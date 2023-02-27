@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "@hffxx/react-overflow-box",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "description": "Implements mobile-like drag",
   "main": "build/index.js",
   "files": [
@@ -25,10 +25,17 @@
     "overflow",
     "box",
     "drag",
+    "dragging",
     "scroll",
     "dragandscroll",
     "library",
-    "typescript"
+    "typescript",
+    "lightweight",
+    "draggable",
+    "like",
+    "mobile",
+    "rwd",
+    "responsive"
   ],
   "author": "Maciej Hoffmann",
   "license": "MIT",

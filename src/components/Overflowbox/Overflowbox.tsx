@@ -30,6 +30,8 @@ export interface OverflowboxProps {
   onDragEnd?: (...args: any[]) => any;
   style?: CSSProperties;
   reactRef?: MutableRefObject<HTMLElement | null>;
+  cursor?: CSSProperties['cursor'];
+  grabCursor?: CSSProperties['cursor'];
   // disableScrollWheel?: boolean;
 }
 
@@ -198,7 +200,12 @@ export const Overflowbox = (props: OverflowboxProps) => {
           handleMoveScroll();
         }
       }}
-      style={{ width: props.width, height: props.height, ...props.style }}
+      style={{
+        width: props.width,
+        height: props.height,
+        cursor: mouseDown ? props.grabCursor : props.cursor,
+        ...props.style,
+      }}
     >
       {props.children}
     </Wrapper>
