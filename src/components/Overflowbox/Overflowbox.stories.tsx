@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 
 import image from './mountains.jpeg';
 import { Overflowbox } from './Overflowbox';
