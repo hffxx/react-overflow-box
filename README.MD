@@ -61,7 +61,7 @@ const Component = () => {
 
 - **How do I position the view in pixels?**
 
-  In the Overflowbox component, you pass the x and y position in pixels. For example, if you have an image that is 1000px width, you can set x to 500 to center the image.
+  In the Overflowbox component, you pass the x and y as number. If you have an image that is 1000px width, you can set x value as 500 to center the image.
 
 ## License
 
