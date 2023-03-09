@@ -3,9 +3,11 @@ import './Overflowbox.css';
 import { clsx } from 'clsx';
 import React, {
   CSSProperties,
+  Dispatch,
   ElementType,
   MutableRefObject,
   ReactNode,
+  SetStateAction,
   useCallback,
   useEffect,
   useRef,
@@ -20,8 +22,10 @@ export interface OverflowboxProps {
   disableX?: boolean;
   disableY?: boolean;
   disable?: boolean;
-  x?: number;
-  y?: number;
+  x: number;
+  y: number;
+  setX: Dispatch<SetStateAction<number>>;
+  setY: Dispatch<SetStateAction<number>>;
   width?: number;
   height?: number;
   onMoveStart?: (...args: any[]) => any;
@@ -33,11 +37,11 @@ export interface OverflowboxProps {
   cursor?: CSSProperties['cursor'];
   grabCursor?: CSSProperties['cursor'];
   disableScrollWheel?: boolean;
+  smoothScrolling?: boolean;
 }
 
 export const Overflowbox = (props: OverflowboxProps) => {
   const Wrapper = props.wrapper || 'div';
-  const { x = 0, y = 0 } = props;
   const innerRef = useRef<null | HTMLElement>(null);
   const [mouseDown, setMouseDown] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -97,19 +101,21 @@ export const Overflowbox = (props: OverflowboxProps) => {
       return;
     }
     const { width, height } = containerRef.current.getBoundingClientRect();
-    const containerWidth = Math.floor(width);
-    const containerHeight = Math.floor(height);
-    const initialX = x - containerWidth / 2;
-    const initialY = y - containerHeight / 2;
-    containerRef.current.scrollLeft = initialX;
-    containerRef.current.scrollTop = initialY;
-  }, [x, y, containerRef]);
+    const containerWidth = Math.ceil(width);
+    const containerHeight = Math.ceil(height);
+    containerRef.current.scrollTo({
+      left: props.x - containerWidth / 2,
+      top: props.y - containerHeight / 2,
+      behavior: props.smoothScrolling ? 'smooth' : 'auto',
+    });
+  }, [props.x, props.y, containerRef, props.smoothScrolling]);
 
   useEffect(() => {
-    if (mounted) {
-      scrollTo();
+    if (!containerRef.current || !mounted) {
+      return;
     }
-  }, [x, y, mounted, scrollTo]);
+    scrollTo();
+  }, [scrollTo, mounted, containerRef]);
 
   const handleMouseLeave = useCallback(() => {
     setIsMouseInside(false);
@@ -149,7 +155,11 @@ export const Overflowbox = (props: OverflowboxProps) => {
   const handleMouseDown = useCallback(
     (event: MouseEvent) => {
       event.preventDefault();
-      if (!containerRef.current || props.disable) {
+      if (
+        !containerRef.current ||
+        props.disable ||
+        (props.disableX && props.disableY)
+      ) {
         return;
       }
       const { offsetLeft, offsetTop, scrollLeft, scrollTop } =
@@ -179,11 +189,17 @@ export const Overflowbox = (props: OverflowboxProps) => {
       const y = event.pageY - containerRef.current.offsetTop;
       const scrollX = x - startX;
       const scrollY = y - startY;
+      const { width, height } = containerRef.current.getBoundingClientRect();
+      const containerWidth = Math.ceil(width);
+      const containerHeight = Math.ceil(height);
+
       if (!props.disableX) {
         containerRef.current.scrollLeft = axisX - scrollX;
+        props.setX(containerRef.current.scrollLeft + containerWidth / 2);
       }
       if (!props.disableY) {
         containerRef.current.scrollTop = axisY - scrollY;
+        props.setY(containerRef.current.scrollTop + containerHeight / 2);
       }
     },
     [mouseDown, startX, startY, axisX, axisY, containerRef, props, isDrag],

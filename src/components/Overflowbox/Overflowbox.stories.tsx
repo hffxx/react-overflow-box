@@ -11,21 +11,38 @@ export default {
 
 export const Default = () => {
   const [x, setX] = useState(0);
+  const [y, setY] = useState(0);
 
   return (
-    <Overflowbox
-      width={300}
-      height={300}
-      style={{ border: '1px solid red' }}
-      onMoveStart={() => console.log('on move Start')}
-      onMoveEnd={() => console.log('on move End')}
-      onDragStart={() => console.log('on drag start')}
-      onDragEnd={() => console.log('on drag end')}
-      showScrollbar
-      x={1920 / 2}
-      y={1080 / 2}
-    >
-      <img src={elo} alt="" />
-    </Overflowbox>
+    <>
+      <Overflowbox
+        width={500}
+        height={500}
+        showScrollbar
+        x={x}
+        y={y}
+        setX={setX}
+        setY={setY}
+        smoothScrolling
+      >
+        <img src={elo} alt="" />
+      </Overflowbox>
+      <button
+        onClick={() => {
+          setX(1920 / 2);
+          setY(1080 / 2);
+        }}
+      >
+        scroll to mid
+      </button>
+      <button
+        onClick={() => {
+          setX(0);
+          setY(0);
+        }}
+      >
+        scroll to 0
+      </button>
+    </>
   );
 };
