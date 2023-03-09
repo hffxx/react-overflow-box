@@ -18,7 +18,6 @@ export const Default = () => {
       <Overflowbox
         width={500}
         height={500}
-        showScrollbar
         x={x}
         y={y}
         setX={setX}
