@@ -3,16 +3,18 @@ import './Overflowbox.css';
 import { clsx } from 'clsx';
 import React, {
   CSSProperties,
+  Dispatch,
   ElementType,
   MutableRefObject,
   ReactNode,
+  SetStateAction,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from 'react';
 
-export interface OverflowboxProps {
+interface OverflowboxOptionalProps {
   children?: ReactNode;
   wrapper?: ElementType;
   showScrollbar?: boolean;
@@ -22,6 +24,8 @@ export interface OverflowboxProps {
   disable?: boolean;
   x?: number;
   y?: number;
+  setX?: Dispatch<SetStateAction<number>>;
+  setY?: Dispatch<SetStateAction<number>>;
   width?: number;
   height?: number;
   onMoveStart?: (...args: any[]) => any;
@@ -33,11 +37,60 @@ export interface OverflowboxProps {
   cursor?: CSSProperties['cursor'];
   grabCursor?: CSSProperties['cursor'];
   disableScrollWheel?: boolean;
+  smoothScrolling?: boolean;
 }
 
+interface OverflowboxWithX {
+  x: number;
+  setX: Dispatch<SetStateAction<number>>;
+}
+
+interface OverflowboxWithY {
+  y: number;
+  setY: Dispatch<SetStateAction<number>>;
+}
+
+interface OverflowboxWithoutX {
+  x?: undefined;
+  setX?: never;
+}
+
+interface OverflowboxWithoutY {
+  y?: undefined;
+  setY?: never;
+}
+
+export type OverflowboxProps = OverflowboxOptionalProps &
+  (OverflowboxWithX | OverflowboxWithoutX) &
+  (OverflowboxWithY | OverflowboxWithoutY);
+
 export const Overflowbox = (props: OverflowboxProps) => {
+  const {
+    x = 0,
+    y = 0,
+    onMoveStart,
+    onDragStart,
+    disable,
+    onDragEnd,
+    onMoveEnd,
+    smoothScrolling,
+    disableX,
+    disableScrollWheel,
+    disableY,
+    reactRef,
+    setY,
+    setX,
+    showScrollbar,
+    className,
+    width,
+    height,
+    children,
+    grabCursor,
+    cursor,
+    style,
+  } = props;
   const Wrapper = props.wrapper || 'div';
-  const { x = 0, y = 0 } = props;
+
   const innerRef = useRef<null | HTMLElement>(null);
   const [mouseDown, setMouseDown] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -49,8 +102,9 @@ export const Overflowbox = (props: OverflowboxProps) => {
   const [isMove, setIsMove] = useState(false);
   const [isMouseInside, setIsMouseInside] = useState(false);
 
-  const containerRef = props.reactRef || innerRef;
+  const containerRef = reactRef || innerRef;
 
+  //Mount after all images are loaded
   useEffect(() => {
     if (!containerRef.current || mounted) {
       return;
@@ -77,12 +131,35 @@ export const Overflowbox = (props: OverflowboxProps) => {
     }
   }, [mounted, containerRef]);
 
+  const scrollTo = useCallback(() => {
+    if (!containerRef.current) {
+      return;
+    }
+    const { width, height } = containerRef.current.getBoundingClientRect();
+    const containerWidth = Math.ceil(width);
+    const containerHeight = Math.ceil(height);
+    containerRef.current.scrollTo({
+      left: x - containerWidth / 2,
+      top: y - containerHeight / 2,
+      behavior: smoothScrolling ? 'smooth' : 'auto',
+    });
+  }, [x, y, containerRef, smoothScrolling]);
+
+  //Initial scroll to
+  useEffect(() => {
+    if (!containerRef.current || !mounted) {
+      return;
+    }
+    scrollTo();
+  }, [scrollTo, mounted, containerRef]);
+
+  //Disable scroll wheel
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
     };
 
-    if (props.disableScrollWheel && isMouseInside) {
+    if (disableScrollWheel && isMouseInside) {
       document.addEventListener('wheel', handleWheel, { passive: false });
     } else {
       document.removeEventListener('wheel', handleWheel);
@@ -90,66 +167,47 @@ export const Overflowbox = (props: OverflowboxProps) => {
     return () => {
       document.removeEventListener('wheel', handleWheel);
     };
-  }, [props.disableScrollWheel, isMouseInside]);
-
-  const scrollTo = useCallback(() => {
-    if (!containerRef.current) {
-      return;
-    }
-    const { width, height } = containerRef.current.getBoundingClientRect();
-    const containerWidth = Math.floor(width);
-    const containerHeight = Math.floor(height);
-    const initialX = x - containerWidth / 2;
-    const initialY = y - containerHeight / 2;
-    containerRef.current.scrollLeft = initialX;
-    containerRef.current.scrollTop = initialY;
-  }, [x, y, containerRef]);
-
-  useEffect(() => {
-    if (mounted) {
-      scrollTo();
-    }
-  }, [x, y, mounted, scrollTo]);
+  }, [disableScrollWheel, isMouseInside]);
 
   const handleMouseLeave = useCallback(() => {
     setIsMouseInside(false);
-    if (props.disable) {
+    if (disable) {
       return;
     }
     if (mouseDown) {
       if (isDrag) {
-        props.onDragEnd?.();
+        onDragEnd?.();
       }
       if (isMove) {
-        props.onMoveEnd?.();
+        onMoveEnd?.();
       }
       setMouseDown(false);
       setIsMove(false);
       setIsDrag(false);
     }
-  }, [props, mouseDown, isDrag, isMove]);
+  }, [mouseDown, isDrag, isMove, disable, onDragEnd, onMoveEnd]);
 
   const handleMouseUp = useCallback(() => {
-    if (props.disable) {
+    if (disable) {
       return;
     }
     if (mouseDown) {
       if (isDrag) {
-        props.onDragEnd?.();
+        onDragEnd?.();
       }
       if (isMove) {
-        props.onMoveEnd?.();
+        onMoveEnd?.();
       }
       setMouseDown(false);
       setIsMove(false);
       setIsDrag(false);
     }
-  }, [mouseDown, props, isDrag, isMove]);
+  }, [mouseDown, disable, isDrag, isMove, onDragEnd, onMoveEnd]);
 
   const handleMouseDown = useCallback(
     (event: MouseEvent) => {
       event.preventDefault();
-      if (!containerRef.current || props.disable) {
+      if (!containerRef.current || disable || (disableX && disableY)) {
         return;
       }
       const { offsetLeft, offsetTop, scrollLeft, scrollTop } =
@@ -162,47 +220,72 @@ export const Overflowbox = (props: OverflowboxProps) => {
       setAxisY(scrollTop);
       setMouseDown(true);
     },
-    [containerRef, props],
+    [containerRef, disableX, disableY, disable],
   );
 
   const handleMouseMove = useCallback(
     (event: MouseEvent) => {
       event.preventDefault();
-      if (!mouseDown || !containerRef.current || props.disable) {
+      if (!mouseDown || !containerRef.current || disable) {
         return;
       }
       if (!isDrag) {
-        props.onDragStart?.();
+        onDragStart?.();
         setIsDrag(true);
       }
       const x = event.pageX - containerRef.current.offsetLeft;
       const y = event.pageY - containerRef.current.offsetTop;
       const scrollX = x - startX;
       const scrollY = y - startY;
-      if (!props.disableX) {
+      const { width, height } = containerRef.current.getBoundingClientRect();
+      const containerWidth = Math.ceil(width);
+      const containerHeight = Math.ceil(height);
+
+      if (!disableX) {
         containerRef.current.scrollLeft = axisX - scrollX;
+        setX?.(containerRef.current.scrollLeft + containerWidth / 2);
       }
-      if (!props.disableY) {
+      if (!disableY) {
         containerRef.current.scrollTop = axisY - scrollY;
+        setY?.(containerRef.current.scrollTop + containerHeight / 2);
       }
     },
-    [mouseDown, startX, startY, axisX, axisY, containerRef, props, isDrag],
+    [
+      mouseDown,
+      startX,
+      startY,
+      axisX,
+      axisY,
+      containerRef,
+      onDragStart,
+      isDrag,
+      disableY,
+      disableX,
+      setX,
+      setY,
+      disable,
+    ],
   );
 
-  const handleMoveScroll = useCallback(() => {
-    props.onMoveStart?.();
-    setIsMove(true);
-  }, [props]);
+  const onScroll = useCallback(() => {
+    if (!mouseDown) {
+      return;
+    }
+    if (!isMove) {
+      onMoveStart?.();
+      setIsMove(true);
+    }
+  }, [onMoveStart, isMove, mouseDown]);
 
   return (
     <Wrapper
       className={clsx(
         'wrapper',
-        !props.showScrollbar && 'hide-scroll',
+        !showScrollbar && 'hide-scroll',
         mouseDown && 'is-dragging',
-        props.className,
-        props.disable && 'disabled',
-        props.disableX && props.disableY && 'disabled',
+        className,
+        disable && 'disabled',
+        disableX && disableY && 'disabled',
       )}
       ref={containerRef}
       onMouseDown={handleMouseDown}
@@ -210,22 +293,15 @@ export const Overflowbox = (props: OverflowboxProps) => {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onMouseEnter={() => setIsMouseInside(true)}
-      onScroll={() => {
-        if (!mouseDown) {
-          return;
-        }
-        if (!isMove) {
-          handleMoveScroll();
-        }
-      }}
+      onScroll={onScroll}
       style={{
-        width: props.width,
-        height: props.height,
-        cursor: mouseDown ? props.grabCursor : props.cursor,
-        ...props.style,
+        width: width,
+        height: height,
+        cursor: mouseDown ? grabCursor : cursor,
+        ...style,
       }}
     >
-      {props.children}
+      {children}
     </Wrapper>
   );
 };

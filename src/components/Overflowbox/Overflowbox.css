@@ -18,6 +18,7 @@
 
 .is-dragging {
   cursor: grabbing;
+  scroll-behavior: auto !important;
 }
 
 .disabled {

@@ -32,28 +32,36 @@ const Component = () => {
 
 ## Component properties
 
-| Prop               | Type             | Description                                    | Default    |
-| ------------------ | ---------------- | ---------------------------------------------- | ---------- |
-| width              | number           | View width                                     |            |
-| height             | number           | View height                                    |            |
-| x                  | number           | Initial X-axis view position                   | 0          |
-| y                  | number           | Initial Y-axis view position                   | 0          |
-| wrapper            | ElementType      | Wrapper element                                | "div"      |
-| reactRef           | MutableRefObject | Ref                                            |            |
-| children           | ReactNode        | Children                                       |            |
-| showScrollbar      | Boolean          | Show the scrollbars                            | false      |
-| className          | String           | Custom classname for the wrapper               |            |
-| disableX           | Boolean          | Disable X-axis view drag                       | false      |
-| disableY           | Boolean          | Disable Y-axis view drag                       | false      |
-| disable            | Boolean          | Disable X-axis and Y-axis view drag            | false      |
-| onDragStart        | Function         | Invoked when the user starts dragging          |            |
-| onDragEnd          | Function         | Invoked when the user ends dragging            |            |
-| onMoveStart        | Function         | Invoked when the view position starts changing |            |
-| onMoveEnd          | Function         | Invoked when the view position stops changing  |            |
-| cursor             | Cursor           | Overrides default cursor                       | "grab"     |
-| grabCursor         | Cursor           | Overrides default cursor while dragging        | "grabbing" |
-| grabCursor         | Cursor           | Overrides default cursor while dragging        | "grabbing" |
-| disableScrollWheel | Boolean          | Disables scroll wheel                          | false      |
+| Prop               | Type                   | Description                                    | Default    | Required    |
+| ------------------ | ---------------------- | ---------------------------------------------- | ---------- | ----------- |
+| width              | number                 | View width                                     |            |             |
+| height             | number                 | View height                                    |            |             |
+| x                  | number                 | Initial X-axis view position                   |            |             |
+| y                  | number                 | Initial Y-axis view position                   |            |             |
+| setX               | SetStateAction<number> | React setState for X-axis value                |            | Only when x |
+| setY               | SetStateAction<number> | React setState for Y-axis value                |            | Only when y |
+| wrapper            | ElementType            | Wrapper element                                | "div"      |             |
+| reactRef           | MutableRefObject       | Ref                                            |            |             |
+| children           | ReactNode              | Children                                       |            |             |
+| showScrollbar      | Boolean                | Show the scrollbars                            | false      |             |
+| smoothScrolling    | Boolean                | Enables smooth animation for scrolling         | false      |             |
+| className          | String                 | Custom classname for the wrapper               |            |             |
+| disableX           | Boolean                | Disable X-axis view drag                       | false      |             |
+| disableY           | Boolean                | Disable Y-axis view drag                       | false      |             |
+| disable            | Boolean                | Disable X-axis and Y-axis view drag            | false      |             |
+| onDragStart        | Function               | Invoked when the user starts dragging          |            |             |
+| onDragEnd          | Function               | Invoked when the user ends dragging            |            |             |
+| onMoveStart        | Function               | Invoked when the view position starts changing |            |             |
+| onMoveEnd          | Function               | Invoked when the view position stops changing  |            |             |
+| cursor             | Cursor                 | Overrides default cursor                       | "grab"     |             |
+| grabCursor         | Cursor                 | Overrides default cursor while dragging        | "grabbing" |             |
+| disableScrollWheel | Boolean                | Disables scrolling inside wrapper              | false      |             |
+
+## FAQ
+
+- **How do I position the view in pixels?**
+
+  In the Overflowbox component, you pass the x and y as number. If you have an image that is 1000px width, you can set x value as 500 to center the image.
 
 ## License
 
