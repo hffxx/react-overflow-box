@@ -86,7 +86,9 @@ export const Overflowbox = (props: OverflowboxProps) => {
       return;
     }
     const images = Array.from(containerRef.current.querySelectorAll('img'));
-
+    const { width, height } = containerRef.current.getBoundingClientRect();
+    const containerWidth = Math.ceil(width);
+    const containerHeight = Math.ceil(height);
     if (images.length) {
       Promise.all(
         images.map(
@@ -100,20 +102,33 @@ export const Overflowbox = (props: OverflowboxProps) => {
             }),
         ),
       ).then(() => {
+        //initial scroll
         setMounted(true);
+        containerRef.current?.scrollTo({
+          left: x - containerWidth / 2,
+          top: y - containerHeight / 2,
+          behavior: 'auto',
+        });
       });
     } else {
       setMounted(true);
     }
-  }, [mounted, containerRef]);
+  }, [mounted, containerRef, x, y]);
 
   const scrollTo = useCallback(() => {
     if (!containerRef.current) {
       return;
     }
+
     const { width, height } = containerRef.current.getBoundingClientRect();
     const containerWidth = Math.ceil(width);
     const containerHeight = Math.ceil(height);
+    if (
+      containerRef.current.scrollLeft === x - containerWidth / 2 &&
+      containerRef.current.scrollTop === y - containerHeight / 2
+    ) {
+      return;
+    }
     containerRef.current.scrollTo({
       left: x - containerWidth / 2,
       top: y - containerHeight / 2,
@@ -121,13 +136,14 @@ export const Overflowbox = (props: OverflowboxProps) => {
     });
   }, [x, y, containerRef, smoothScrolling]);
 
-  //Initial scroll to
   useEffect(() => {
-    if (!containerRef.current || !mounted) {
+    if (!containerRef.current) {
       return;
     }
-    scrollTo();
-  }, [scrollTo, mounted, containerRef]);
+    if (mounted) {
+      scrollTo();
+    }
+  }, [scrollTo, containerRef, mounted]);
 
   //Disable scroll wheel
   useEffect(() => {
