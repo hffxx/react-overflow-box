@@ -14,7 +14,7 @@ import React, {
   useState,
 } from 'react';
 
-interface OverflowboxOptionalProps {
+export interface OverflowboxProps {
   children?: ReactNode;
   wrapper?: ElementType;
   showScrollbar?: boolean;
@@ -39,30 +39,6 @@ interface OverflowboxOptionalProps {
   disableScrollWheel?: boolean;
   smoothScrolling?: boolean;
 }
-
-interface OverflowboxWithX {
-  x: number;
-  setX: Dispatch<SetStateAction<number>>;
-}
-
-interface OverflowboxWithY {
-  y: number;
-  setY: Dispatch<SetStateAction<number>>;
-}
-
-interface OverflowboxWithoutX {
-  x?: undefined;
-  setX?: never;
-}
-
-interface OverflowboxWithoutY {
-  y?: undefined;
-  setY?: never;
-}
-
-export type OverflowboxProps = OverflowboxOptionalProps &
-  (OverflowboxWithX | OverflowboxWithoutX) &
-  (OverflowboxWithY | OverflowboxWithoutY);
 
 export const Overflowbox = (props: OverflowboxProps) => {
   const {
