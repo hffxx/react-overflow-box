@@ -77,7 +77,6 @@ export const Overflowbox = (props: OverflowboxProps) => {
   const [isDrag, setIsDrag] = useState(false);
   const [isMove, setIsMove] = useState(false);
   const [isMouseInside, setIsMouseInside] = useState(false);
-
   const containerRef = reactRef || innerRef;
 
   //Mount after all images are loaded
@@ -103,12 +102,12 @@ export const Overflowbox = (props: OverflowboxProps) => {
         ),
       ).then(() => {
         //initial scroll
-        setMounted(true);
         containerRef.current?.scrollTo({
           left: x - containerWidth / 2,
           top: y - containerHeight / 2,
           behavior: 'auto',
         });
+        setMounted(true);
       });
     } else {
       setMounted(true);
@@ -293,7 +292,7 @@ export const Overflowbox = (props: OverflowboxProps) => {
         ...style,
       }}
     >
-      {children}
+      {mounted ? children : null}
     </Wrapper>
   );
 };

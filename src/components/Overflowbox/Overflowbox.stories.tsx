@@ -10,8 +10,8 @@ export default {
 };
 
 export const Default = () => {
-  const [x, setX] = useState(0);
-  const [y, setY] = useState(0);
+  const [x, setX] = useState(1920 / 2);
+  const [y, setY] = useState(1080 / 2);
 
   return (
     <>
