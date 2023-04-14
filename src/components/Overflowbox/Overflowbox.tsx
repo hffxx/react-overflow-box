@@ -69,7 +69,6 @@ export const Overflowbox = (props: OverflowboxProps) => {
   const [startY, setStartY] = useState(0);
   const [axisX, setAxisX] = useState(0);
   const [axisY, setAxisY] = useState(0);
-  const [mounted, setMounted] = useState(false);
   const [isDrag, setIsDrag] = useState(false);
   const [isMouseInside, setIsMouseInside] = useState(false);
   const containerRef = reactRef || innerRef;
@@ -79,15 +78,31 @@ export const Overflowbox = (props: OverflowboxProps) => {
     null,
   );
 
-  //Mount after all images are loaded
-  useEffect(() => {
-    if (!containerRef.current || mounted) {
+  const scrollTo = useCallback(() => {
+    if (!containerRef.current) {
       return;
     }
-    const images = Array.from(containerRef.current.querySelectorAll('img'));
     const { width, height } = containerRef.current.getBoundingClientRect();
     const containerWidth = Math.ceil(width);
     const containerHeight = Math.ceil(height);
+    if (
+      containerRef.current.scrollLeft === x - containerWidth / 2 &&
+      containerRef.current.scrollTop === y - containerHeight / 2
+    ) {
+      return;
+    }
+    containerRef.current.scrollTo({
+      left: x - containerWidth / 2,
+      top: y - containerHeight / 2,
+      behavior: 'auto',
+    });
+  }, [x, y, containerRef]);
+
+  useEffect(() => {
+    if (!containerRef.current) {
+      return;
+    }
+    const images = Array.from(containerRef.current.querySelectorAll('img'));
     if (images.length) {
       Promise.all(
         images.map(
@@ -102,47 +117,10 @@ export const Overflowbox = (props: OverflowboxProps) => {
         ),
       ).then(() => {
         //initial scroll
-        containerRef.current?.scrollTo({
-          left: x - containerWidth / 2,
-          top: y - containerHeight / 2,
-          behavior: 'auto',
-        });
-        setMounted(true);
+        scrollTo();
       });
-    } else {
-      setMounted(true);
     }
-  }, [mounted, containerRef, x, y]);
-
-  const scrollTo = useCallback(() => {
-    if (!containerRef.current) {
-      return;
-    }
-
-    const { width, height } = containerRef.current.getBoundingClientRect();
-    const containerWidth = Math.ceil(width);
-    const containerHeight = Math.ceil(height);
-    if (
-      containerRef.current.scrollLeft === x - containerWidth / 2 &&
-      containerRef.current.scrollTop === y - containerHeight / 2
-    ) {
-      return;
-    }
-    containerRef.current.scrollTo({
-      left: x - containerWidth / 2,
-      top: y - containerHeight / 2,
-      behavior: smoothScrolling ? 'smooth' : 'auto',
-    });
-  }, [x, y, containerRef, smoothScrolling]);
-
-  useEffect(() => {
-    if (!containerRef.current) {
-      return;
-    }
-    if (mounted) {
-      scrollTo();
-    }
-  }, [scrollTo, containerRef, mounted]);
+  }, [x, y, scrollTo]);
 
   //Disable scroll wheel
   useEffect(() => {
@@ -246,9 +224,6 @@ export const Overflowbox = (props: OverflowboxProps) => {
     setScrollTimeout(newTimeout);
   };
   useEffect(() => {
-    if (!mounted) {
-      return;
-    }
     if (!scrolling && isDrag && containerRef.current) {
       const { width, height } = containerRef.current.getBoundingClientRect();
       const containerWidth = Math.ceil(width);
@@ -263,7 +238,6 @@ export const Overflowbox = (props: OverflowboxProps) => {
     }
   }, [
     scrolling,
-    mounted,
     containerRef,
     disableX,
     disableY,
@@ -301,7 +275,7 @@ export const Overflowbox = (props: OverflowboxProps) => {
         ...style,
       }}
     >
-      {mounted ? children : null}
+      {children}
     </Wrapper>
   );
 };
