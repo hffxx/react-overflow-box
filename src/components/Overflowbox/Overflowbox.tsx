@@ -14,8 +14,6 @@ import React, {
   useState,
 } from 'react';
 
-import { useDebounce } from './useDebounce';
-
 export interface OverflowboxProps {
   children?: ReactNode;
   wrapper?: ElementType;
