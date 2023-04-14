@@ -206,6 +206,7 @@ export const Overflowbox = (props: OverflowboxProps) => {
     [containerRef, disableX, disableY, disable],
   );
 
+
   const handleTouchMove = useCallback(() => {
     if (!mouseDown || !containerRef.current || disable) {
       return;
@@ -215,6 +216,7 @@ export const Overflowbox = (props: OverflowboxProps) => {
       setIsDrag(true);
     }
   }, [mouseDown, containerRef, onDragStart, isDrag, disable]);
+
 
   const handleMouseMove = useCallback(
     (event: MouseEvent) => {
@@ -251,6 +253,7 @@ export const Overflowbox = (props: OverflowboxProps) => {
       disable,
     ],
   );
+
 
   const onScroll = () => {
     setScrolling(true);
