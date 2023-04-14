@@ -27,8 +27,8 @@ export const Default = () => {
         setX={setX}
         setY={setY}
         smoothScrolling
-        onDragStart={() => console.log('elo')}
-        onDragEnd={() => console.log('elo')}
+        onDragStart={() => console.log('Start')}
+        onDragEnd={() => console.log('End')}
       >
         <img src={elo} alt="" />
       </Overflowbox>

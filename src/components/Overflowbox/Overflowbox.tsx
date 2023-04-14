@@ -166,26 +166,18 @@ export const Overflowbox = (props: OverflowboxProps) => {
       return;
     }
     if (mouseDown) {
-      if (isDrag) {
-        onDragEnd?.();
-      }
       setMouseDown(false);
-      setIsDrag(false);
     }
-  }, [mouseDown, isDrag, disable, onDragEnd]);
+  }, [mouseDown, disable]);
 
   const handleMouseUp = useCallback(() => {
     if (disable) {
       return;
     }
     if (mouseDown) {
-      if (isDrag) {
-        onDragEnd?.();
-      }
       setMouseDown(false);
-      setIsDrag(false);
     }
-  }, [mouseDown, disable, isDrag, onDragEnd]);
+  }, [mouseDown, disable]);
 
   const handleMouseDown = useCallback(
     (event: MouseEvent) => {
@@ -206,17 +198,12 @@ export const Overflowbox = (props: OverflowboxProps) => {
     [containerRef, disableX, disableY, disable],
   );
 
-
   const handleTouchMove = useCallback(() => {
-    if (!mouseDown || !containerRef.current || disable) {
+    if (!containerRef.current || disable) {
       return;
     }
-    if (!isDrag) {
-      onDragStart?.();
-      setIsDrag(true);
-    }
-  }, [mouseDown, containerRef, onDragStart, isDrag, disable]);
-
+    setIsDrag(true);
+  }, [containerRef, disable]);
 
   const handleMouseMove = useCallback(
     (event: MouseEvent) => {
@@ -224,10 +211,7 @@ export const Overflowbox = (props: OverflowboxProps) => {
       if (!mouseDown || !containerRef.current || disable) {
         return;
       }
-      if (!isDrag) {
-        onDragStart?.();
-        setIsDrag(true);
-      }
+      setIsDrag(true);
       const x = event.pageX - containerRef.current.offsetLeft;
       const y = event.pageY - containerRef.current.offsetTop;
       const scrollX = x - startX;
@@ -246,15 +230,11 @@ export const Overflowbox = (props: OverflowboxProps) => {
       axisX,
       axisY,
       containerRef,
-      onDragStart,
-      isDrag,
       disableY,
       disableX,
       disable,
     ],
   );
-
-
   const onScroll = () => {
     setScrolling(true);
     if (scrollTimeout !== null) {
@@ -265,12 +245,15 @@ export const Overflowbox = (props: OverflowboxProps) => {
     }, 100);
     setScrollTimeout(newTimeout);
   };
-
   useEffect(() => {
-    if (!scrolling && mounted && containerRef.current) {
+    if (!mounted) {
+      return;
+    }
+    if (!scrolling && isDrag && containerRef.current) {
       const { width, height } = containerRef.current.getBoundingClientRect();
       const containerWidth = Math.ceil(width);
       const containerHeight = Math.ceil(height);
+      setIsDrag(false);
       if (!disableX) {
         setX?.(containerRef.current.scrollLeft + containerWidth / 2);
       }
@@ -278,7 +261,17 @@ export const Overflowbox = (props: OverflowboxProps) => {
         setY?.(containerRef.current.scrollTop + containerHeight / 2);
       }
     }
-  }, [scrolling, mounted, containerRef, disableX, disableY, setX, setY]);
+  }, [
+    scrolling,
+    mounted,
+    containerRef,
+    disableX,
+    disableY,
+    setX,
+    setY,
+    isDrag,
+    onDragEnd,
+  ]);
 
   return (
     <Wrapper
