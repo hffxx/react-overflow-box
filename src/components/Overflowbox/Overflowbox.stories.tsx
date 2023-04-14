@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import elo from './elo.png';
 import { Overflowbox } from './Overflowbox';
@@ -13,6 +13,10 @@ export const Default = () => {
   const [x, setX] = useState(1920 / 2);
   const [y, setY] = useState(1080 / 2);
 
+  // useEffect(() => {
+  //   console.log(x, y);
+  // }, [x, y]);
+
   return (
     <>
       <Overflowbox
@@ -23,6 +27,7 @@ export const Default = () => {
         setX={setX}
         setY={setY}
         smoothScrolling
+        onDragEnd={() => console.log('elo')}
       >
         <img src={elo} alt="" />
       </Overflowbox>
