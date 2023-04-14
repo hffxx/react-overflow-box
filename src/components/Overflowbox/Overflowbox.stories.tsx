@@ -13,9 +13,9 @@ export const Default = () => {
   const [x, setX] = useState(1920 / 2);
   const [y, setY] = useState(1080 / 2);
 
-  // useEffect(() => {
-  //   console.log(x, y);
-  // }, [x, y]);
+  useEffect(() => {
+    console.log(x, y);
+  }, [x, y]);
 
   return (
     <>
