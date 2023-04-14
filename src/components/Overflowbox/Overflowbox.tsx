@@ -248,10 +248,10 @@ export const Overflowbox = (props: OverflowboxProps) => {
     const containerHeight = Math.ceil(height);
 
     if (!disableX) {
-      mouseDown && setX?.(containerRef.current.scrollLeft + containerWidth / 2);
+      setX?.(containerRef.current.scrollLeft + containerWidth / 2);
     }
     if (!disableY) {
-      mouseDown && setY?.(containerRef.current.scrollTop + containerHeight / 2);
+      setY?.(containerRef.current.scrollTop + containerHeight / 2);
     }
   }, [
     mouseDown,
