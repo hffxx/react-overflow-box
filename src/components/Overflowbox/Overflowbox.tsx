@@ -195,16 +195,15 @@ export const Overflowbox = (props: OverflowboxProps) => {
     }
   }, [mouseDown, disable, isDrag, isMove, onDragEnd, onMoveEnd]);
 
-  const handleMouseDown = useCallback(
-    (event: MouseEvent) => {
-      event.preventDefault();
+  const handleEventDown = useCallback(
+    (eventX: number, eventY: number) => {
       if (!containerRef.current || disable || (disableX && disableY)) {
         return;
       }
       const { offsetLeft, offsetTop, scrollLeft, scrollTop } =
         containerRef.current;
-      const x = event.pageX - offsetLeft;
-      const y = event.pageY - offsetTop;
+      const x = eventX - offsetLeft;
+      const y = eventY - offsetTop;
       setStartX(x);
       setStartY(y);
       setAxisX(scrollLeft);
@@ -214,9 +213,24 @@ export const Overflowbox = (props: OverflowboxProps) => {
     [containerRef, disableX, disableY, disable],
   );
 
-  const handleMouseMove = useCallback(
+  const handleMouseDown = useCallback(
     (event: MouseEvent) => {
       event.preventDefault();
+      handleEventDown(event.pageX, event.pageY);
+    },
+    [handleEventDown],
+  );
+
+  const handleTouchStart = useCallback(
+    (event: TouchEvent) => {
+      const { clientX, clientY } = event.touches[0];
+      handleEventDown(clientX, clientY);
+    },
+    [handleEventDown],
+  );
+
+  const updateState = useCallback(
+    (eventX: number, eventY: number) => {
       if (!mouseDown || !containerRef.current || disable) {
         return;
       }
@@ -224,14 +238,13 @@ export const Overflowbox = (props: OverflowboxProps) => {
         onDragStart?.();
         setIsDrag(true);
       }
-      const x = event.pageX - containerRef.current.offsetLeft;
-      const y = event.pageY - containerRef.current.offsetTop;
+      const { width, height } = containerRef.current.getBoundingClientRect();
+      const x = eventX - containerRef.current.offsetLeft;
+      const y = eventY - containerRef.current.offsetTop;
       const scrollX = x - startX;
       const scrollY = y - startY;
-      const { width, height } = containerRef.current.getBoundingClientRect();
       const containerWidth = Math.ceil(width);
       const containerHeight = Math.ceil(height);
-
       if (!disableX) {
         containerRef.current.scrollLeft = axisX - scrollX;
         setX?.(containerRef.current.scrollLeft + containerWidth / 2);
@@ -256,6 +269,22 @@ export const Overflowbox = (props: OverflowboxProps) => {
       setY,
       disable,
     ],
+  );
+
+  const handleMouseMove = useCallback(
+    (event: MouseEvent) => {
+      event.preventDefault();
+      updateState(event.pageX, event.pageX);
+    },
+    [updateState],
+  );
+
+  const handleTouchMove = useCallback(
+    (event: TouchEvent) => {
+      const { clientX, clientY } = event.touches[0];
+      updateState(clientX, clientY);
+    },
+    [updateState],
   );
 
   const onScroll = useCallback(() => {
@@ -285,6 +314,9 @@ export const Overflowbox = (props: OverflowboxProps) => {
       onMouseLeave={handleMouseLeave}
       onMouseEnter={() => setIsMouseInside(true)}
       onScroll={onScroll}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleMouseUp}
       style={{
         width: width,
         height: height,
