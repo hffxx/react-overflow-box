@@ -27,6 +27,7 @@ export const Default = () => {
         setX={setX}
         setY={setY}
         smoothScrolling
+        onDragStart={() => console.log('elo')}
         onDragEnd={() => console.log('elo')}
       >
         <img src={elo} alt="" />
