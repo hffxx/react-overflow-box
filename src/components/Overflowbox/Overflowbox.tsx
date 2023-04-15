@@ -72,38 +72,42 @@ export const Overflowbox = (props: OverflowboxProps) => {
   const [isDrag, setIsDrag] = useState(false);
   const [isMouseInside, setIsMouseInside] = useState(false);
   const containerRef = reactRef || innerRef;
+  const [mounted, setMounted] = useState(false);
 
   const [scrolling, setScrolling] = useState(false);
   const [scrollTimeout, setScrollTimeout] = useState<NodeJS.Timeout | null>(
     null,
   );
 
-  const scrollTo = useCallback(() => {
-    if (!containerRef.current) {
-      return;
-    }
-    const { width, height } = containerRef.current.getBoundingClientRect();
-    const containerWidth = Math.ceil(width);
-    const containerHeight = Math.ceil(height);
-    if (
-      containerRef.current.scrollLeft === x - containerWidth / 2 &&
-      containerRef.current.scrollTop === y - containerHeight / 2
-    ) {
-      return;
-    }
-    containerRef.current.scrollTo({
-      left: x - containerWidth / 2,
-      top: y - containerHeight / 2,
-      behavior: 'auto',
-    });
-  }, [x, y, containerRef]);
+  const scrollTo = useCallback(
+    (smooth: boolean) => {
+      if (!containerRef.current) {
+        return;
+      }
+      const { width, height } = containerRef.current.getBoundingClientRect();
+      const containerWidth = Math.ceil(width);
+      const containerHeight = Math.ceil(height);
+      if (
+        containerRef.current.scrollLeft === x - containerWidth / 2 &&
+        containerRef.current.scrollTop === y - containerHeight / 2
+      ) {
+        return;
+      }
+      containerRef.current.scrollTo({
+        left: x - containerWidth / 2,
+        top: y - containerHeight / 2,
+        behavior: smooth ? 'smooth' : 'auto',
+      });
+    },
+    [x, y, containerRef],
+  );
 
   useEffect(() => {
     if (!containerRef.current) {
       return;
     }
     const images = Array.from(containerRef.current.querySelectorAll('img'));
-    if (images.length) {
+    if (images.length && !mounted) {
       Promise.all(
         images.map(
           (image) =>
@@ -116,11 +120,14 @@ export const Overflowbox = (props: OverflowboxProps) => {
             }),
         ),
       ).then(() => {
-        //initial scroll
-        scrollTo();
+        scrollTo(false);
+        setMounted(true);
       });
     }
-  }, [x, y, scrollTo]);
+    if (mounted) {
+      scrollTo(!!smoothScrolling);
+    }
+  }, [x, y, scrollTo, containerRef, mounted]);
 
   //Disable scroll wheel
   useEffect(() => {
