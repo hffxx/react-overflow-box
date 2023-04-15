@@ -127,7 +127,7 @@ export const Overflowbox = (props: OverflowboxProps) => {
     if (mounted) {
       scrollTo(!!smoothScrolling);
     }
-  }, [x, y, scrollTo, containerRef, mounted]);
+  }, [x, y, scrollTo, containerRef, mounted, smoothScrolling]);
 
   //Disable scroll wheel
   useEffect(() => {
