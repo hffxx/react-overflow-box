@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "@hffxx/react-overflow-box",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Implements mobile-like drag",
   "main": "build/index.js",
   "readme": "README.md",

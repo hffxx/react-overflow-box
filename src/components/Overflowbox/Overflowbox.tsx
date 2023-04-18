@@ -217,7 +217,6 @@ export const Overflowbox = (props: OverflowboxProps) => {
     (event: MouseEvent) => {
       event.preventDefault();
       if (!mouseDown || !containerRef.current || disable) {
-        setNewPosition();
         return;
       }
       setIsDrag(true);
@@ -250,7 +249,6 @@ export const Overflowbox = (props: OverflowboxProps) => {
       disableX,
       disable,
       onStart,
-      setNewPosition,
     ],
   );
   const onScroll = () => {
@@ -267,13 +265,13 @@ export const Overflowbox = (props: OverflowboxProps) => {
   useEffect(() => {
     if (!scrolling && onEnd && !mouseDown) {
       onDragEnd?.();
+      setNewPosition();
       setOnEnd(false);
     }
-  }, [scrolling, onEnd, onDragEnd, mouseDown]);
+  }, [scrolling, onEnd, onDragEnd, mouseDown, setNewPosition]);
 
   useEffect(() => {
     if (!scrolling && isDrag) {
-      setNewPosition();
       setIsDrag(false);
     }
   }, [scrolling, isDrag, setNewPosition]);
