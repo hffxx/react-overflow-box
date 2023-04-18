@@ -199,6 +199,20 @@ export const Overflowbox = (props: OverflowboxProps) => {
     }
   }, [containerRef, disable, onStart, onDragStart, isDrag]);
 
+  const setNewPosition = useCallback(() => {
+    if (containerRef.current) {
+      const { width, height } = containerRef.current.getBoundingClientRect();
+      const containerWidth = Math.ceil(width);
+      const containerHeight = Math.ceil(height);
+      if (!disableX) {
+        setX?.(containerRef.current.scrollLeft + containerWidth / 2);
+      }
+      if (!disableY) {
+        setY?.(containerRef.current.scrollTop + containerHeight / 2);
+      }
+    }
+  }, [containerRef, disableX, disableY, setX, setY]);
+
   const handleMouseMove = useCallback(
     (event: MouseEvent) => {
       event.preventDefault();
@@ -221,6 +235,7 @@ export const Overflowbox = (props: OverflowboxProps) => {
       if (!disableY) {
         containerRef.current.scrollTop = axisY - scrollY;
       }
+      setNewPosition();
     },
     [
       mouseDown,
@@ -235,6 +250,7 @@ export const Overflowbox = (props: OverflowboxProps) => {
       disableX,
       disable,
       onStart,
+      setNewPosition,
     ],
   );
   const onScroll = () => {
@@ -256,19 +272,11 @@ export const Overflowbox = (props: OverflowboxProps) => {
   }, [scrolling, onEnd, onDragEnd, mouseDown]);
 
   useEffect(() => {
-    if (!scrolling && isDrag && containerRef.current) {
-      const { width, height } = containerRef.current.getBoundingClientRect();
-      const containerWidth = Math.ceil(width);
-      const containerHeight = Math.ceil(height);
+    if (!scrolling && isDrag) {
+      setNewPosition();
       setIsDrag(false);
-      if (!disableX) {
-        setX?.(containerRef.current.scrollLeft + containerWidth / 2);
-      }
-      if (!disableY) {
-        setY?.(containerRef.current.scrollTop + containerHeight / 2);
-      }
     }
-  }, [scrolling, containerRef, disableX, disableY, setX, setY, isDrag]);
+  }, [scrolling, isDrag, setNewPosition]);
 
   return (
     <Wrapper

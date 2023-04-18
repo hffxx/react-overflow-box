@@ -13,9 +13,11 @@ export const Default = () => {
   const [x, setX] = useState(1920 / 2);
   const [y, setY] = useState(1080 / 2);
 
-  // useEffect(() => {
-  //   console.log(x, y);
-  // }, [x, y]);
+  useEffect(() => {
+    console.log(x, y);
+  }, [x, y]);
+
+  const eloe = () => console.log(x, y);
 
   return (
     <>
@@ -48,6 +50,7 @@ export const Default = () => {
       >
         scroll to 0
       </button>
+      <button onClick={eloe}>show</button>
     </>
   );
 };
