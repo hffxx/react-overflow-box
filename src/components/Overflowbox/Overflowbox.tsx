@@ -217,6 +217,7 @@ export const Overflowbox = (props: OverflowboxProps) => {
     (event: MouseEvent) => {
       event.preventDefault();
       if (!mouseDown || !containerRef.current || disable) {
+        setNewPosition();
         return;
       }
       setIsDrag(true);
@@ -235,7 +236,6 @@ export const Overflowbox = (props: OverflowboxProps) => {
       if (!disableY) {
         containerRef.current.scrollTop = axisY - scrollY;
       }
-      setNewPosition();
     },
     [
       mouseDown,
