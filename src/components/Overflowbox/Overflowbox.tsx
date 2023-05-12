@@ -299,9 +299,8 @@ export const Overflowbox = (props: OverflowboxProps) => {
         width: width,
         height: height,
         cursor: mouseDown ? grabCursor : cursor,
-        overflowX: disableX ? 'hidden' : 'auto',
-        overflowY: disableY ? 'hidden' : 'auto',
-        overflow: disable ? 'hidden' : 'auto',
+        overflowX: disableX || disable ? 'hidden' : 'auto',
+        overflowY: disableY || disable ? 'hidden' : 'auto',
         ...style,
       }}
     >
