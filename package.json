@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "@hffxx/react-overflow-box",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "Implements mobile-like drag",
   "main": "build/index.js",
   "readme": "README.md",
@@ -36,17 +36,15 @@
     "like",
     "mobile",
     "rwd",
-    "responsive"
+    "responsive",
+    "grab",
+    "move"
   ],
   "author": "Maciej Hoffmann",
   "license": "MIT",
   "peerDependencies": {
-    "clsx": "^1.2.1",
     "react": "^18.0.2",
     "react-dom": "^18.0.2"
-  },
-  "dependencies": {
-    "clsx": "^1.2.1"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^20.0.0",
@@ -67,7 +65,6 @@
     "@types/react": "^18.0.2",
     "@typescript-eslint/eslint-plugin": "^5.39.0",
     "@typescript-eslint/parser": "^5.39.0",
-    "clsx": "^1.2.1",
     "eslint": "^8.25.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",

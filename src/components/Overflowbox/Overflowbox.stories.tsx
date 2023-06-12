@@ -13,11 +13,7 @@ export const Default = () => {
   const [x, setX] = useState(1920 / 2);
   const [y, setY] = useState(1080 / 2);
 
-  useEffect(() => {
-    console.log(x, y);
-  }, [x, y]);
-
-  const eloe = () => console.log(x, y);
+  const [isDragging, setIsDragging] = useState(false);
 
   return (
     <>
@@ -29,8 +25,8 @@ export const Default = () => {
         setX={setX}
         setY={setY}
         smoothScrolling
-        onDragStart={() => console.log('Start')}
-        onDragEnd={() => console.log('End')}
+        onDragStart={() => console.log('drag start')}
+        onDragEnd={() => console.log('drag end')}
       >
         <img src={elo} alt="" />
       </Overflowbox>
@@ -50,7 +46,7 @@ export const Default = () => {
       >
         scroll to 0
       </button>
-      <button onClick={eloe}>show</button>
+      <div>{isDragging ? 'is drag' : 'no drag'}</div>
     </>
   );
 };

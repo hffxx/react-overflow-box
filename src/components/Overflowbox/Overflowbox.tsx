@@ -1,6 +1,5 @@
 import './Overflowbox.css';
 
-import { clsx } from 'clsx';
 import React, {
   CSSProperties,
   Dispatch,
@@ -43,16 +42,16 @@ export const Overflowbox = (props: OverflowboxProps) => {
     x = 0,
     y = 0,
     onDragStart,
-    disable,
     onDragEnd,
     smoothScrolling,
+    disable,
     disableX,
-    disableScrollWheel,
     disableY,
     reactRef,
     setY,
     setX,
     showScrollbar,
+    disableScrollWheel,
     className,
     width,
     height,
@@ -63,20 +62,23 @@ export const Overflowbox = (props: OverflowboxProps) => {
   } = props;
   const Wrapper = props.wrapper || 'div';
 
+  const [mounted, setMounted] = useState(false);
+
   const innerRef = useRef<null | HTMLElement>(null);
+  const containerRef = reactRef || innerRef;
+
   const [mouseDown, setMouseDown] = useState(false);
+  const [fingerDown, setFingerDown] = useState(false);
+  const [scrolling, setScrolling] = useState(false);
+  const [drag, setDrag] = useState(false);
+
   const [startX, setStartX] = useState(0);
   const [startY, setStartY] = useState(0);
   const [axisX, setAxisX] = useState(0);
   const [axisY, setAxisY] = useState(0);
-  const [isDrag, setIsDrag] = useState(false);
-  const [isMouseInside, setIsMouseInside] = useState(false);
-  const containerRef = reactRef || innerRef;
-  const [mounted, setMounted] = useState(false);
-  const [onStart, setOnStart] = useState(false);
-  const [onEnd, setOnEnd] = useState(false);
 
-  const [scrolling, setScrolling] = useState(false);
+  const [isMouseInside, setIsMouseInside] = useState(false);
+
   const [scrollTimeout, setScrollTimeout] = useState<NodeJS.Timeout | null>(
     null,
   );
@@ -131,7 +133,6 @@ export const Overflowbox = (props: OverflowboxProps) => {
     }
   }, [x, y, scrollTo, containerRef, mounted, smoothScrolling]);
 
-  //Disable scroll wheel
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
@@ -151,22 +152,14 @@ export const Overflowbox = (props: OverflowboxProps) => {
     setIsMouseInside(false);
     if (mouseDown) {
       setMouseDown(false);
-      setOnStart(false);
-      if (isDrag) {
-        setIsDrag(false);
-      }
     }
-  }, [mouseDown, isDrag]);
+  }, [mouseDown]);
 
   const handleMouseUp = useCallback(() => {
     if (mouseDown) {
       setMouseDown(false);
-      setOnStart(false);
-      if (isDrag) {
-        setIsDrag(false);
-      }
     }
-  }, [mouseDown, isDrag]);
+  }, [mouseDown]);
 
   const handleMouseDown = useCallback(
     (event: MouseEvent) => {
@@ -187,18 +180,6 @@ export const Overflowbox = (props: OverflowboxProps) => {
     [containerRef, disableX, disableY, disable],
   );
 
-  const handleTouchMove = useCallback(() => {
-    if (!containerRef.current || disable) {
-      return;
-    }
-    setIsDrag(true);
-    if (isDrag && !onStart) {
-      onDragStart?.();
-      setOnStart(true);
-      setOnEnd(true);
-    }
-  }, [containerRef, disable, onStart, onDragStart, isDrag]);
-
   const setNewPosition = useCallback(() => {
     if (containerRef.current) {
       const { width, height } = containerRef.current.getBoundingClientRect();
@@ -213,17 +194,25 @@ export const Overflowbox = (props: OverflowboxProps) => {
     }
   }, [containerRef, disableX, disableY, setX, setY]);
 
+  const handleTouchMove = useCallback(() => {
+    if (disable) {
+      return;
+    }
+    if (!drag) {
+      onDragStart?.();
+      setDrag(true);
+    }
+  }, [disable, drag, onDragStart]);
+
   const handleMouseMove = useCallback(
     (event: MouseEvent) => {
       event.preventDefault();
       if (!mouseDown || !containerRef.current || disable) {
         return;
       }
-      setIsDrag(true);
-      if (isDrag && !onStart) {
+      if (!drag) {
         onDragStart?.();
-        setOnStart(true);
-        setOnEnd(true);
+        setDrag(true);
       }
       const x = event.pageX - containerRef.current.offsetLeft;
       const y = event.pageY - containerRef.current.offsetTop;
@@ -237,9 +226,9 @@ export const Overflowbox = (props: OverflowboxProps) => {
       }
     },
     [
-      mouseDown,
-      isDrag,
       onDragStart,
+      drag,
+      mouseDown,
       startX,
       startY,
       axisX,
@@ -248,52 +237,66 @@ export const Overflowbox = (props: OverflowboxProps) => {
       disableY,
       disableX,
       disable,
-      onStart,
     ],
   );
+
   const onScroll = () => {
-    setScrolling(true);
-    if (scrollTimeout !== null) {
-      clearTimeout(scrollTimeout);
+    if (fingerDown || mouseDown) {
+      setScrolling(true);
+      if (scrollTimeout !== null) {
+        clearTimeout(scrollTimeout);
+      }
+      const newTimeout = setTimeout(() => {
+        setScrolling(false);
+      }, 100);
+      setScrollTimeout(newTimeout);
     }
-    const newTimeout = setTimeout(() => {
-      setScrolling(false);
-    }, 100);
-    setScrollTimeout(newTimeout);
   };
 
   useEffect(() => {
-    if (!scrolling && onEnd && !mouseDown) {
-      onDragEnd?.();
-      setNewPosition();
-      setOnEnd(false);
+    if (!mouseDown || !scrolling) {
+      return;
     }
-  }, [scrolling, onEnd, onDragEnd, mouseDown, setNewPosition]);
+    setNewPosition();
+  }, [scrolling, setNewPosition, mouseDown]);
 
   useEffect(() => {
-    if (!scrolling && isDrag) {
-      setIsDrag(false);
+    if (!fingerDown || !scrolling) {
+      return;
     }
-  }, [scrolling, isDrag, setNewPosition]);
+    setNewPosition();
+  }, [scrolling, setNewPosition, fingerDown]);
+
+  useEffect(() => {
+    if (!mouseDown || !fingerDown) {
+      setDrag(false);
+    }
+  }, [mouseDown, fingerDown]);
+
+  useEffect(() => {
+    if (drag) {
+      if (!mouseDown && !fingerDown) {
+        onDragEnd?.();
+      }
+    }
+  }, [drag, onDragEnd, mouseDown, fingerDown]);
 
   return (
     <Wrapper
-      className={clsx(
-        'wrapper',
-        !showScrollbar && 'hide-scroll',
-        mouseDown && 'is-dragging',
-        className,
-        disable && 'disabled',
-        disableX && disableY && 'disabled',
-      )}
+      className={`wrapper ${!showScrollbar ? 'hide-scroll' : ''} ${
+        mouseDown ? 'is-dragging' : ''
+      } ${disable ? 'disabled' : ''} ${
+        disableX && disableY ? 'disabled' : ''
+      } ${className}`}
       ref={containerRef}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      onMouseEnter={() => setIsMouseInside(true)}
       onTouchMove={handleTouchMove}
-      onTouchEnd={() => setOnStart(false)}
+      onMouseEnter={() => setIsMouseInside(true)}
+      onTouchStart={() => setFingerDown(true)}
+      onTouchEnd={() => setFingerDown(false)}
       onScroll={onScroll}
       style={{
         width: width,
