@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "@hffxx/react-overflow-box",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "Implements mobile-like drag",
   "main": "build/index.js",
   "readme": "README.md",
@@ -42,7 +42,11 @@
   ],
   "author": "Maciej Hoffmann",
   "license": "MIT",
+  "dependencies": {
+    "clsx": "^1.2.1"
+  },
   "peerDependencies": {
+    "clsx": "^1.2.1",
     "react": "^18.0.2",
     "react-dom": "^18.0.2"
   },

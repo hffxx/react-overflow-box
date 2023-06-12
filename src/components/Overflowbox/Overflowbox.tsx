@@ -1,5 +1,6 @@
 import './Overflowbox.css';
 
+import { clsx } from 'clsx';
 import React, {
   CSSProperties,
   Dispatch,
@@ -283,11 +284,14 @@ export const Overflowbox = (props: OverflowboxProps) => {
 
   return (
     <Wrapper
-      className={`wrapper ${!showScrollbar ? 'hide-scroll' : ''} ${
-        mouseDown ? 'is-dragging' : ''
-      } ${disable ? 'disabled' : ''} ${
-        disableX && disableY ? 'disabled' : ''
-      } ${className}`}
+      className={clsx(
+        'wrapper',
+        !showScrollbar && 'hide-scroll',
+        mouseDown && 'is-dragging',
+        className,
+        disable && 'disabled',
+        disableX && disableY && 'disabled',
+      )}
       ref={containerRef}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
