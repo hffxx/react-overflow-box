@@ -4,7 +4,7 @@ React Overflowbox to implement mouse-like dragging.
 
 ## Demo
 
-[Codesandbox demo](https://codesandbox.io/s/react-overflowbox-o3put1?file=/src/App.js/)
+[Codesandbox demo](https://codesandbox.io/s/react-overflowbox-o3put1?file=/src/App.tsx/)
 
 ## Install
 
